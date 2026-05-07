@@ -1,13 +1,13 @@
 export interface Prompt {
   id: string;
   title: string;
-  content: string;
-  description?: string;
-  tags: Tag[];
-  aiModel: AiModel;
-  authorId: string;
+  description: string;
+  beforeImageUrl: string;
+  afterImageUrl: string;
+  promptText: string;
+  copyCount: number;
   createdAt: string;
-  updatedAt: string;
+  category: 'new' | 'hot' | 'all';
 }
 
 export interface Tag {
