@@ -26,7 +26,7 @@ export default function Home() {
             activeCategory === 'all' ? 'text-primary-100' : 'text-gray-400 hover:text-gray-100'
           }`}
         >
-          // all
+          {`// all`}
         </button>
         <button
           onClick={() => setActiveCategory('new')}
@@ -34,7 +34,7 @@ export default function Home() {
             activeCategory === 'new' ? 'text-primary-100' : 'text-gray-400 hover:text-gray-100'
           }`}
         >
-          // new
+          {`// new`}
         </button>
         <button
           onClick={() => setActiveCategory('hot')}
@@ -42,7 +42,7 @@ export default function Home() {
             activeCategory === 'hot' ? 'text-primary-100' : 'text-gray-400 hover:text-gray-100'
           }`}
         >
-          // hot
+          {`// hot`}
         </button>
         <button
           onClick={() => setActiveCategory('qa')}
@@ -50,7 +50,7 @@ export default function Home() {
             activeCategory === 'qa' ? 'text-primary-100' : 'text-gray-400 hover:text-gray-100'
           }`}
         >
-          // Q&A
+          {`// Q&A`}
         </button>
       </nav>
 
