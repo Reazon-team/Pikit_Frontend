@@ -1,5 +1,16 @@
 import { useAuthStore } from '@/stores/authStore';
-import { ApiResponse, AuthResponse, LoginRequest, SignupRequest, User } from '@/types';
+import {
+  ApiResponse,
+  AuthResponse,
+  LoginRequest,
+  SignupRequest,
+  User,
+  PromptListItem,
+  PromptDetail,
+  ToggleResponse,
+  CopyResponse,
+  PromptSort,
+} from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -104,4 +115,35 @@ export const authApi = {
   }),
   logout: () => apiClient<null>('/api/auth/logout', { method: 'POST' }),
   getMe: () => apiClient<User>('/api/auth/me'),
+};
+
+export const promptApi = {
+  list: (params?: { page?: number; size?: number; sort?: PromptSort }) => {
+    const query = new URLSearchParams();
+    if (params?.page !== undefined) query.append('page', String(params.page));
+    if (params?.size !== undefined) query.append('size', String(params.size));
+    if (params?.sort) query.append('sort', params.sort);
+    const qs = query.toString();
+    return apiClient<PromptListItem[]>(`/api/prompts${qs ? `?${qs}` : ''}`, {
+      skipAuth: false,
+    });
+  },
+
+  detail: (id: number) => apiClient<PromptDetail>(`/api/prompts/${id}`),
+
+  toggleLike: (id: number) =>
+    apiClient<ToggleResponse>(`/api/prompts/${id}/like`, {
+      method: 'POST',
+    }),
+
+  toggleBookmark: (id: number) =>
+    apiClient<ToggleResponse>(`/api/prompts/${id}/bookmark`, {
+      method: 'POST',
+    }),
+
+  incrementCopy: (id: number) =>
+    apiClient<CopyResponse>(`/api/prompts/${id}/copy`, {
+      method: 'POST',
+      skipAuth: true,
+    }),
 };

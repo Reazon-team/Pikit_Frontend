@@ -1,15 +1,3 @@
-export interface Prompt {
-  id: string;
-  title: string;
-  description: string;
-  beforeImageUrl: string;
-  afterImageUrl: string;
-  promptText: string;
-  copyCount: number;
-  createdAt: string;
-  category: 'new' | 'hot' | 'all';
-}
-
 export interface Tag {
   id: string;
   name: string;
@@ -30,6 +18,46 @@ export interface User {
   nickname: string;
   createdAt?: string;
 }
+
+export interface AuthorInfo {
+  userId: number;
+  nickname: string;
+}
+
+export interface PromptListItem {
+  id: number;
+  title: string;
+  description: string | null;
+  beforeImageUrl: string;
+  afterImageUrl: string;
+  aiModel: string | null;
+  copyCount: number;
+  likeCount: number;
+  bookmarkCount: number;
+  author: AuthorInfo;
+  createdAt: string;
+  isLiked: boolean;
+  isBookmarked: boolean;
+}
+
+export interface PromptDetail extends PromptListItem {
+  promptText: string;
+  instagramUrl: string | null;
+  viewCount: number;
+  updatedAt: string;
+}
+
+export interface ToggleResponse {
+  liked?: boolean;
+  bookmarked?: boolean;
+  count: number;
+}
+
+export interface CopyResponse {
+  copyCount: number;
+}
+
+export type PromptSort = 'latest' | 'popular';
 
 export interface AuthResponse {
   accessToken: string;
