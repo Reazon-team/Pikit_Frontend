@@ -24,10 +24,36 @@ export interface SearchFilter {
   sortBy?: 'latest' | 'popular';
 }
 
+export interface User {
+  userId: number;
+  username: string;
+  nickname: string;
+  createdAt?: string;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  userId: number;
+  username: string;
+  nickname: string;
+}
+
+export interface SignupRequest {
+  username: string;
+  password: string;
+  nickname: string;
+}
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
-  data: T;
-  message?: string;
+  data: T | null;
+  message: string | null;
   timestamp: string;
 }
 
