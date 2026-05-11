@@ -1,6 +1,6 @@
-# Pickit Frontend
+# Pikit Frontend
 
-프롬프트 공유 및 관리 플랫폼 'Pickit'의 프론트엔드 저장소입니다.
+프롬프트 공유 및 관리 플랫폼 'Pikit'의 프론트엔드 저장소입니다.
 
 ## 기술 스택
 - **Framework**: Next.js 14+ (App Router)
@@ -32,4 +32,4 @@
 - `NEXT_PUBLIC_SITE_URL`: 프론트엔드 사이트 주소 (기본값: http://localhost:3000)
 
 ## 백엔드 저장소
-- [Pickit Backend](https://github.com/your-username/pickit-backend) (placeholder)
+- [Pickit Backend](https://github.com/Reazon-team/Pikit_Backend) (placeholder)
