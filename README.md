@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎨 Pickit Frontend
+# 🎨 Pikit Frontend
 
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-16.2.5-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js"/>
@@ -25,7 +25,7 @@
 
 ## 📖 소개
 
-**Pickit**은 인스타그램에서 인기 있는 AI 생성 이미지의 **프롬프트를 모아두고 공유**하는 아카이브 플랫폼입니다.
+**Pikit**은 인스타그램에서 인기 있는 AI 생성 이미지의 **프롬프트를 모아두고 공유**하는 아카이브 플랫폼입니다.
 
 크리에이터들이 직접 만든 프롬프트와 결과 이미지를 한 곳에서 모아볼 수 있고, **before/after 슬라이더**로 원본과 AI 변환 결과를 비교할 수 있습니다.
 
@@ -64,7 +64,7 @@
 ## 📁 프로젝트 구조
 
 ```
-Pickit_Frontend/
+Pikit_Frontend/
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── page.tsx           # 메인 갤러리 페이지
@@ -189,7 +189,7 @@ NEXT_PUBLIC_API_URL=https://pikit-backend-5nnb.onrender.com
 
 ## 🤝 백엔드 연동
 
-이 프론트엔드는 **Pickit Backend** (Spring Boot)와 연동됩니다.
+이 프론트엔드는 **Pikit Backend** (Spring Boot)와 연동됩니다.
 
 - 📦 [Backend Repository](https://github.com/Reazon-team/Pikit_Backend)
 - 📚 API 문서: 백엔드 README 참고
