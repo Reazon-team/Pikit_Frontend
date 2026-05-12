@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type { User, AuthResponse } from '@/types';
 
 interface AuthState {
@@ -46,6 +46,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'pickit-auth',
+      storage: createJSONStorage(() => sessionStorage),
     }
   )
 );
