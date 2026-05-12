@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: "Pickit - AI Prompt Archive",
   description: "Collect and search AI image prompts from Instagram",
   icons:{
-    icon: '/favicon.png',
+    icon: 'src/app/favicon.png' ,
   },
 };
 
