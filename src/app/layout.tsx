@@ -13,6 +13,9 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Pickit - AI Prompt Archive",
   description: "Collect and search AI image prompts from Instagram",
+  icons:{
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
