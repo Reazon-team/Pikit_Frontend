@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { Button } from '@/components/ui/Button';
@@ -16,6 +16,7 @@ const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -42,11 +43,22 @@ const Header = () => {
     router.push('/');
   };
 
+  const handleLogoClick = (e: React.MouseEvent) => {
+    if (pathname === '/') {
+      e.preventDefault();
+      window.location.reload();
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-line-100 bg-bg-100/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
-          <Link href="/" className="group flex items-center font-mono text-xl font-bold text-primary-100">
+          <Link 
+            href="/" 
+            onClick={handleLogoClick}
+            className="group flex items-center font-mono text-xl font-bold text-primary-100"
+          >
             <span>pickit</span>
             <span className="ml-0.5 h-5 w-2 bg-primary-100 animate-blink"></span>
           </Link>

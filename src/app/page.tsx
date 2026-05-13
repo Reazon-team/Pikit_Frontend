@@ -1,16 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { PromptCard } from '@/components/ui/PromptCard';
 import { promptApi } from '@/lib/api';
 import { PromptListItem, PromptSort } from '@/types';
 import { useAuthStore } from '@/stores/authStore';
 
-export default function Home() {
+function HomeContent() {
   const [prompts, setPrompts] = useState<PromptListItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sort, setSort] = useState<PromptSort>('latest');
+  const searchParams = useSearchParams();
+  const sort = (searchParams.get('sort') as PromptSort) || 'random';
   const { accessToken } = useAuthStore();
 
   useEffect(() => {
@@ -71,26 +73,6 @@ export default function Home() {
 
   return (
     <main className="container mx-auto max-w-[1400px] px-4 py-8">
-      {/* Nav Area */}
-      <nav className="mb-8 flex items-center gap-8 border-b border-line-100 pb-4">
-        <button
-          onClick={() => setSort('latest')}
-          className={`font-mono text-sm transition-colors ${
-            sort === 'latest' ? 'text-primary-100' : 'text-gray-400 hover:text-gray-100'
-          }`}
-        >
-          {`// latest`}
-        </button>
-        <button
-          onClick={() => setSort('popular')}
-          className={`font-mono text-sm transition-colors ${
-            sort === 'popular' ? 'text-primary-100' : 'text-gray-400 hover:text-gray-100'
-          }`}
-        >
-          {`// popular`}
-        </button>
-      </nav>
-
       {/* Status Area */}
       <div className="mb-8 flex items-center gap-2 border-y border-line-100 py-3 font-mono text-xs text-gray-300">
         <span className="text-primary-100">●</span>
@@ -104,7 +86,7 @@ export default function Home() {
         <div className="py-20 text-center font-mono text-red-400">
           <p>{error}</p>
           <button
-            onClick={() => setSort(sort)}
+            onClick={() => window.location.reload()}
             className="mt-4 text-sm underline hover:text-red-300"
           >
             retry
@@ -146,5 +128,28 @@ export default function Home() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <main className="container mx-auto max-w-[1400px] px-4 py-8">
+        <div className="mb-8 flex items-center gap-2 border-y border-line-100 py-3 font-mono text-xs text-gray-300">
+          <span className="text-primary-100">●</span>
+          <span>loading...</span>
+        </div>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="h-[300px] animate-pulse rounded-md border border-line-100 bg-bg-200"
+            />
+          ))}
+        </div>
+      </main>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }

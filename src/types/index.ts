@@ -57,7 +57,7 @@ export interface CopyResponse {
   copyCount: number;
 }
 
-export type PromptSort = 'latest' | 'popular';
+export type PromptSort = 'latest' | 'popular' | 'random';
 
 export interface AuthResponse {
   accessToken: string;

@@ -1,24 +1,36 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { label: '// all', href: '/' },
-  { label: '// new', href: '/new' },
-  { label: '// hot', href: '/hot' },
+  { label: '// all', href: '/?sort=random' },
+  { label: '// new', href: '/?sort=latest' },
+  { label: '// hot', href: '/?sort=popular' },
   { label: '// Q&A', href: '/qa' },
 ];
 
-const Nav = () => {
+const NavContent = () => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const sort = searchParams.get('sort');
 
   return (
     <nav className="flex items-center gap-6">
       {navItems.map((item) => {
-        const isActive = pathname === item.href;
+        let isActive = false;
+        
+        if (item.href === '/') {
+          isActive = pathname === '/' && !sort;
+        } else if (item.href.startsWith('/?sort=')) {
+          const itemSort = item.href.split('=')[1];
+          isActive = pathname === '/' && (sort === itemSort || (!sort && itemSort === 'random'));
+        } else {
+          isActive = pathname === item.href;
+        }
+
         return (
           <Link
             key={item.href}
@@ -35,6 +47,14 @@ const Nav = () => {
         );
       })}
     </nav>
+  );
+};
+
+const Nav = () => {
+  return (
+    <Suspense fallback={<div className="flex items-center gap-6 h-8" />}>
+      <NavContent />
+    </Suspense>
   );
 };
 
