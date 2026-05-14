@@ -1,28 +1,24 @@
 'use client';
 
 import React, { useState, useEffect, FormEvent } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { useAuthStore } from '@/stores/authStore';
+import { useUIStore } from '@/stores/uiStore';
 import { authApi } from '@/lib/api';
 
 export default function SignupPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [nickname, setNickname] = useState('');
   
-  const [showPassword, setShowPassword] = useState(false);
-  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
-  
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   
   const router = useRouter();
   const { isAuthenticated, setAuth } = useAuthStore();
+  const { openLoginModal } = useUIStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -36,23 +32,33 @@ export default function SignupPage() {
   }, [mounted, isAuthenticated, router]);
 
   const validate = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    
-    if (!/^[a-zA-Z0-9]{3,20}$/.test(username)) {
-      newErrors.username = '아이디는 영문/숫자 3-20자';
+    // Email regex check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage('올바른 이메일 형식을 입력해주세요.');
+      return false;
     }
-    if (password.length < 8 || password.length > 64) {
-      newErrors.password = '비밀번호는 8-64자';
+
+    // Password complexity: English + Number + Special char, 8+ chars
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}\[\]|\\:;"'<>,.?/-]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setErrorMessage('비밀번호는 영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.');
+      return false;
     }
+
     if (password !== passwordConfirm) {
-      newErrors.passwordConfirm = '비밀번호가 일치하지 않습니다';
+      setPasswordError('비밀번호가 일치하지 않습니다.');
+      return false;
+    } else {
+      setPasswordError(null);
     }
-    if (nickname.length < 1 || nickname.length > 20) {
-      newErrors.nickname = '닉네임은 1-20자';
+
+    if (!nickname.trim()) {
+      setErrorMessage('닉네임을 입력해주세요.');
+      return false;
     }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    return true;
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -60,135 +66,110 @@ export default function SignupPage() {
     if (!validate()) return;
     
     setIsLoading(true);
-    setErrors({});
+    setErrorMessage(null);
     
     try {
-      const response = await authApi.signup({ username, password, nickname });
+      const response = await authApi.signup({ 
+        username: email, 
+        password, 
+        nickname 
+      });
       setAuth(response);
       router.push('/');
     } catch (error) {
-      const msg = error instanceof Error ? error.message : '회원가입에 실패했습니다';
-      if (msg.includes('아이디')) {
-        setErrors({ username: msg });
-      } else if (msg.includes('닉네임')) {
-        setErrors({ nickname: msg });
-      } else {
-        setErrors({ form: msg });
-      }
+      setErrorMessage(error instanceof Error ? error.message : '회원가입에 실패했습니다.');
       setIsLoading(false);
     }
   };
 
+  const isFormValid = email && password && passwordConfirm && nickname && !isLoading;
+
   if (!mounted) return null;
 
   return (
-    <div className="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center p-4">
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-mono font-bold text-primary-100 mb-2">
-          [ pikit ]
-        </h1>
-        <p className="text-gray-300 font-mono text-sm">
-          // signup
-        </p>
-      </div>
+    <div className="mx-auto max-w-md px-6 py-16">
+      <h1 className="mb-8 text-center text-heading-xl text-gr-100">회원가입</h1>
 
-      <div className="w-full max-w-[400px] bg-bg-200 border border-line-100 rounded-lg p-8 shadow-xl">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Input
-              placeholder="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              disabled={isLoading}
-              className={errors.username ? 'border-red-500/50' : ''}
-              autoComplete="username"
-            />
-            {errors.username && (
-              <p className="text-red-400 text-xs font-mono mt-1">{errors.username}</p>
-            )}
-          </div>
-
-          <div className="relative">
-            <Input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              className={errors.password ? 'border-red-500/50' : ''}
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-            {errors.password && (
-              <p className="text-red-400 text-xs font-mono mt-1">{errors.password}</p>
-            )}
-          </div>
-
-          <div className="relative">
-            <Input
-              type={showPasswordConfirm ? 'text' : 'password'}
-              placeholder="confirm password"
-              value={passwordConfirm}
-              onChange={(e) => setPasswordConfirm(e.target.value)}
-              disabled={isLoading}
-              className={errors.passwordConfirm ? 'border-red-500/50' : ''}
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
-            >
-              {showPasswordConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-            {errors.passwordConfirm && (
-              <p className="text-red-400 text-xs font-mono mt-1">{errors.passwordConfirm}</p>
-            )}
-          </div>
-
-          <div>
-            <Input
-              placeholder="nickname"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              disabled={isLoading}
-              className={errors.nickname ? 'border-red-500/50' : ''}
-            />
-            {errors.nickname && (
-              <p className="text-red-400 text-xs font-mono mt-1">{errors.nickname}</p>
-            )}
-          </div>
-
-          {errors.form && (
-            <div className="text-red-400 bg-red-500/10 border border-red-500/30 rounded p-3 font-mono text-sm">
-              {errors.form}
-            </div>
-          )}
-
-          <Button
-            type="submit"
-            variant="primary"
-            className="w-full font-mono"
-            disabled={isLoading}
-          >
-            {isLoading ? 'signing up...' : 'signup'}
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <Link 
-            href="/login" 
-            className="text-primary-100 hover:text-primary-200 font-mono text-sm"
-          >
-            // 이미 계정이 있다면? login
-          </Link>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Email */}
+        <div className="space-y-2">
+          <label className="text-caption-lg-500 text-gr-100">이메일</label>
+          <input
+            type="text"
+            placeholder="이메일을 입력해주세요."
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-lg border border-line-100 px-4 py-3 text-body-400 focus:border-primary focus:outline-none"
+          />
         </div>
+
+        {/* Nickname (Added to satisfy API requirements) */}
+        <div className="space-y-2">
+          <label className="text-caption-lg-500 text-gr-100">닉네임</label>
+          <input
+            type="text"
+            placeholder="사용하실 닉네임을 입력해주세요."
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            className="w-full rounded-lg border border-line-100 px-4 py-3 text-body-400 focus:border-primary focus:outline-none"
+          />
+        </div>
+
+        {/* Password */}
+        <div className="space-y-2">
+          <label className="text-caption-lg-500 text-gr-100">비밀번호</label>
+          <input
+            type="password"
+            placeholder="영문, 숫자, 특수문자가 들어간 8자 이상"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg border border-line-100 px-4 py-3 text-body-400 focus:border-primary focus:outline-none"
+          />
+        </div>
+
+        {/* Password Confirm */}
+        <div className="space-y-2">
+          <input
+            type="password"
+            placeholder="비밀번호를 한번 더 입력해주세요."
+            value={passwordConfirm}
+            onChange={(e) => setPasswordConfirm(e.target.value)}
+            className={`w-full rounded-lg border px-4 py-3 text-body-400 focus:outline-none ${
+              passwordError ? 'border-danger' : 'border-line-100 focus:border-primary'
+            }`}
+          />
+          {passwordError && (
+            <p className="text-caption-lg-400 text-danger">{passwordError}</p>
+          )}
+        </div>
+
+        {/* Global Error Message */}
+        {errorMessage && (
+          <p className="text-caption-lg-400 text-danger text-center">{errorMessage}</p>
+        )}
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={!isFormValid}
+          className="w-full rounded-lg bg-primary py-3 text-body-500 text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isLoading ? '가입 처리 중...' : '가입완료'}
+        </button>
+      </form>
+
+      {/* Login Link */}
+      <div className="mt-8 text-center text-caption-lg-400 text-gr-200">
+        이미 계정이 있으신가요?{' '}
+        <button
+          onClick={() => {
+            router.push('/');
+            setTimeout(() => openLoginModal(), 100);
+          }}
+          className="font-medium text-gr-100 hover:underline"
+        >
+          로그인
+        </button>
       </div>
     </div>
   );

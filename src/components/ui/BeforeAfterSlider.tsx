@@ -104,23 +104,23 @@ export const BeforeAfterSlider: React.FC<Props> = ({
       </div>
 
       {/* Labels */}
-      <div className="absolute left-3 top-3 z-20 rounded bg-bg-100/70 px-2 py-1 text-[10px] font-mono text-gray-100 backdrop-blur-sm pointer-events-none border border-line-100">
+      <div className="absolute left-4 top-4 z-20 rounded bg-white px-2 py-1 text-[10px] font-bold text-black shadow-sm pointer-events-none">
         BEFORE
       </div>
-      <div className="absolute right-3 top-3 z-20 rounded bg-bg-100/70 px-2 py-1 text-[10px] font-mono text-gray-100 backdrop-blur-sm pointer-events-none border border-line-100">
+      <div className="absolute right-4 top-4 z-20 rounded bg-white px-2 py-1 text-[10px] font-bold text-black shadow-sm pointer-events-none">
         AFTER
       </div>
 
       {/* Handle Line */}
       <div
-        className="absolute bottom-0 top-0 z-30 w-[2px] bg-primary-100 shadow-[0_0_10px_rgba(76,255,145,0.5)] pointer-events-none"
+        className="absolute bottom-0 top-0 z-30 w-[1px] bg-white/50 pointer-events-none"
         style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
       >
         {/* Handle Circle */}
         <div
-          className="absolute left-1/2 top-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary-100 shadow-[0_0_15px_rgba(76,255,145,0.4)] active:scale-110 transition-transform pointer-events-auto cursor-ew-resize"
+          className="absolute left-1/2 top-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black shadow-lg active:scale-110 transition-transform pointer-events-auto cursor-ew-resize"
         >
-          <MoveHorizontal className="h-4 w-4 text-bg-100" />
+          <MoveHorizontal size={16} />
         </div>
       </div>
 
@@ -131,6 +131,3 @@ export const BeforeAfterSlider: React.FC<Props> = ({
     </div>
   );
 };
-
-
-

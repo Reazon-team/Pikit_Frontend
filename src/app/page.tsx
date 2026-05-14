@@ -1,153 +1,119 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { PromptCard } from '@/components/ui/PromptCard';
+import { useSearchParams, useRouter } from 'next/navigation';
+import PopularPromptsSection from '@/components/home/PopularPromptsSection';
+import MainBanner from '@/components/home/MainBanner';
+import AllPromptsSection from '@/components/home/AllPromptsSection';
+import Pagination from '@/components/common/Pagination';
 import { promptApi } from '@/lib/api';
-import { PromptListItem, PromptSort } from '@/types';
-import { useAuthStore } from '@/stores/authStore';
+import { PromptListItem } from '@/types';
 
 function HomeContent() {
-  const [prompts, setPrompts] = useState<PromptListItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [popularPrompts, setPopularPrompts] = useState<PromptListItem[]>([]);
+  const [allPrompts, setAllPrompts] = useState<PromptListItem[]>([]);
+  const [isPopularLoading, setIsPopularLoading] = useState(true);
+  const [isAllLoading, setIsAllLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
   const searchParams = useSearchParams();
-  const sort = (searchParams.get('sort') as PromptSort) || 'random';
-  const { accessToken } = useAuthStore();
+  const router = useRouter();
+  
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 16;
 
+  // 인기 프롬프트 (상위 6개, copyCount 기준)
   useEffect(() => {
-    let cancelled = false;
-
-    const fetchPrompts = async () => {
-      setIsLoading(true);
-      setError(null);
+    const fetchPopular = async () => {
       try {
-        const data = await promptApi.list({ sort });
-        if (!cancelled) {
-          setPrompts(data);
-        }
+        const response = await promptApi.popular({ limit: 6 });
+        setPopularPrompts(response);
       } catch (err) {
-        if (!cancelled) {
-          setError(
-            err instanceof Error ? err.message : '프롬프트를 불러오지 못했습니다'
-          );
-        }
+        console.error('Failed to fetch popular prompts:', err);
       } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+        setIsPopularLoading(false);
       }
     };
+    fetchPopular();
+  }, []);
 
-    fetchPrompts();
-    return () => {
-      cancelled = true;
+  // 전체 프롬프트 (최신순, 페이징)
+  useEffect(() => {
+    const fetchAll = async () => {
+      setIsAllLoading(true);
+      setError(null);
+      try {
+        const response = await promptApi.list({ 
+          sort: 'latest', 
+          page: currentPage - 1, 
+          size: pageSize 
+        });
+        setAllPrompts(response.content);
+        setTotalPages(response.totalPages);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '프롬프트를 불러오지 못했습니다.');
+      } finally {
+        setIsAllLoading(false);
+      }
     };
-  }, [sort, accessToken]);
+    fetchAll();
+  }, [currentPage]);
 
-  const handleLikeChange = (promptId: number, liked: boolean, count: number) => {
-    setPrompts((prev) =>
-      prev.map((p) =>
-        p.id === promptId ? { ...p, isLiked: liked, likeCount: count } : p
-      )
+  const handleCopyCountUpdate = (id: number, count: number) => {
+    setAllPrompts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, copyCount: count } : p))
+    );
+    setPopularPrompts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, copyCount: count } : p))
     );
   };
 
-  const handleBookmarkChange = (
-    promptId: number,
-    bookmarked: boolean,
-    count: number
-  ) => {
-    setPrompts((prev) =>
-      prev.map((p) =>
-        p.id === promptId ? { ...p, isBookmarked: bookmarked, bookmarkCount: count } : p
-      )
-    );
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', String(page));
+    router.push(`/?${params.toString()}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleCopyChange = (promptId: number, copyCount: number) => {
-    setPrompts((prev) =>
-      prev.map((p) => (p.id === promptId ? { ...p, copyCount } : p))
+  if (error && !isAllLoading) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+        <p className="text-body-500 text-gr-200">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="rounded-lg bg-primary px-4 py-2 text-white hover:opacity-90"
+        >
+          다시 시도
+        </button>
+      </div>
     );
-  };
+  }
 
   return (
-    <main className="container mx-auto max-w-[1400px] px-4 py-8">
-      {/* Status Area */}
-      <div className="mb-8 flex items-center gap-2 border-y border-line-100 py-3 font-mono text-xs text-gray-300">
-        <span className="text-primary-100">●</span>
-        <span>
-          {isLoading ? 'loading prompts...' : `${prompts.length} prompts loaded`}
-        </span>
-      </div>
-
-      {/* Error State */}
-      {error && !isLoading && (
-        <div className="py-20 text-center font-mono text-red-400">
-          <p>{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 text-sm underline hover:text-red-300"
-          >
-            retry
-          </button>
-        </div>
-      )}
-
-      {/* Loading State */}
-      {isLoading && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="h-[300px] animate-pulse rounded-md border border-line-100 bg-bg-200"
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!isLoading && !error && prompts.length === 0 && (
-        <div className="py-20 text-center font-mono text-gray-400">
-          No prompts found.
-        </div>
-      )}
-
-      {/* Card Grid */}
-      {!isLoading && !error && prompts.length > 0 && (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-          {prompts.map((prompt) => (
-            <PromptCard
-              key={prompt.id}
-              prompt={prompt}
-              onLikeChange={handleLikeChange}
-              onBookmarkChange={handleBookmarkChange}
-              onCopyChange={handleCopyChange}
-            />
-          ))}
-        </div>
-      )}
-    </main>
+    <div className="min-h-screen pb-20">
+      <PopularPromptsSection prompts={popularPrompts} isLoading={isPopularLoading} />
+      <MainBanner />
+      <AllPromptsSection
+        prompts={allPrompts}
+        isLoading={isAllLoading}
+        onCopyCountUpdate={handleCopyCountUpdate}
+      />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
+    </div>
   );
 }
 
-export default function Home() {
+export default function HomePage() {
   return (
     <Suspense fallback={
-      <main className="container mx-auto max-w-[1400px] px-4 py-8">
-        <div className="mb-8 flex items-center gap-2 border-y border-line-100 py-3 font-mono text-xs text-gray-300">
-          <span className="text-primary-100">●</span>
-          <span>loading...</span>
-        </div>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="h-[300px] animate-pulse rounded-md border border-line-100 bg-bg-200"
-            />
-          ))}
-        </div>
-      </main>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
     }>
       <HomeContent />
     </Suspense>

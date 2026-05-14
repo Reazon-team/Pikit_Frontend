@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-
-const jetbrainsMono = JetBrains_Mono({
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-});
+import Toast from "@/components/common/Toast";
 
 export const metadata: Metadata = {
   title: "Pikit - AI Prompt Archive",
@@ -21,11 +15,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`${jetbrainsMono.variable} h-full`}>
-      <body className="min-h-full flex flex-col font-sans antialiased bg-bg-100 text-gray-100">
+    <html lang="ko" className="h-full">
+      <head>
+        <link
+          rel="stylesheet"
+          as="style"
+          crossOrigin="anonymous"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+      </head>
+      <body className="min-h-screen flex flex-col font-sans antialiased">
         <Header />
-        {children}
+        <main className="flex-1">{children}</main>
         <Footer />
+        <Toast />
       </body>
     </html>
   );

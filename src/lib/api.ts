@@ -10,6 +10,7 @@ import {
   ToggleResponse,
   CopyResponse,
   PromptSort,
+  PageResponse,
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
@@ -62,8 +63,6 @@ export async function apiClient<T>(endpoint: string, options: ApiOptions = {}): 
         throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
       }
     } else {
-      // If already refreshing, wait a bit or throw? 
-      // Simplest: throw and let user retry or handled by UI
       throw new Error('인증 갱신 중입니다. 잠시 후 다시 시도해주세요.');
     }
   }
@@ -124,12 +123,21 @@ export const promptApi = {
     if (params?.size !== undefined) query.append('size', String(params.size));
     if (params?.sort) query.append('sort', params.sort);
     const qs = query.toString();
-    return apiClient<PromptListItem[]>(`/api/prompts${qs ? `?${qs}` : ''}`, {
+    return apiClient<PageResponse<PromptListItem>>(`/api/prompts${qs ? `?${qs}` : ''}`, {
       skipAuth: false,
     });
   },
 
   detail: (id: number) => apiClient<PromptDetail>(`/api/prompts/${id}`),
+
+  popular: (params?: { limit?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.limit !== undefined) query.append('limit', String(params.limit));
+    const qs = query.toString();
+    return apiClient<PromptListItem[]>(`/api/prompts/popular${qs ? `?${qs}` : ''}`, {
+      skipAuth: false,
+    });
+  },
 
   toggleLike: (id: number) =>
     apiClient<ToggleResponse>(`/api/prompts/${id}/like`, {

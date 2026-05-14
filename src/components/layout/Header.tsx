@@ -2,21 +2,21 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
-import { ChevronDown } from 'lucide-react';
-import { SearchBar } from '@/components/ui/SearchBar';
-import { Button } from '@/components/ui/Button';
-import { Nav } from './Nav';
+import { usePathname, useRouter } from 'next/navigation';
+import { Search } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
+import { useUIStore } from '@/stores/uiStore';
 import { authApi } from '@/lib/api';
+import LoginModal from '@/components/auth/LoginModal';
 
 const Header = () => {
   const { isAuthenticated, user, clearAuth } = useAuthStore();
+  const { openLoginModal } = useUIStore();
   const [mounted, setMounted] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -36,7 +36,7 @@ const Header = () => {
     try {
       await authApi.logout();
     } catch (error) {
-      // Ignore errors during logout (e.g. token expired)
+      // Ignore errors during logout
     }
     clearAuth();
     setIsDropdownOpen(false);
@@ -50,77 +50,93 @@ const Header = () => {
     }
   };
 
+  const menuItems = [
+    { label: '프롬프트', href: '/' },
+    { label: '질문해요', href: '/qa' },
+  ];
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-line-100 bg-bg-100/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-8">
-          <Link 
-            href="/" 
-            onClick={handleLogoClick}
-            className="group flex items-center font-mono text-xl font-bold text-primary-100"
-          >
-            <span>pickit</span>
-            <span className="ml-0.5 h-5 w-2 bg-primary-100 animate-blink"></span>
+    <header className="sticky top-0 z-50 w-full border-b border-line-100 bg-bg-100">
+      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-6 py-4">
+        {/* Left Area: Logo & Menu */}
+        <div className="flex items-center gap-10">
+          <Link href="/" onClick={handleLogoClick} className="text-heading-lg font-bold">
+            <span className="text-primary">P</span>
+            <span className="text-gr-100">ikit</span>
           </Link>
-          <div className="hidden md:block">
-            <Nav />
-          </div>
+          
+          <nav className="flex items-center gap-5">
+            {menuItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`text-body-500 transition-colors hover:text-gr-100 ${
+                    isActive ? 'font-medium text-gr-100' : 'text-gr-200'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        <div className="flex flex-1 items-center justify-center px-4 md:max-w-md">
-          <SearchBar />
+        {/* Center Area: Search Bar */}
+        <div className="relative mx-4 w-full max-w-[480px] flex-1">
+          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gr-200" />
+          <input
+            type="text"
+            placeholder="프롬프트를 검색하세요."
+            className="w-full rounded-lg bg-bg-200 py-2 pl-10 pr-4 text-body-400 text-gr-100 placeholder:text-gr-200 focus:outline-none focus:ring-2 focus:ring-primary-light"
+          />
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Right Area: Auth */}
+        <div className="flex items-center gap-4">
           {!mounted ? (
-            <div className="w-[160px] h-9" />
+            <div className="h-9 w-20" />
           ) : isAuthenticated && user ? (
-            <div ref={dropdownRef} className="relative">
+            <div ref={dropdownRef} className="relative flex items-center gap-3">
+              <span className="text-body-500 text-gr-100">{user.nickname}</span>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded font-mono text-gray-100 hover:bg-bg-200 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-white text-caption-lg-500"
               >
-                <span>@{user.nickname}</span>
-                <ChevronDown size={16} />
+                {user.nickname?.charAt(0).toUpperCase()}
               </button>
               
               {isDropdownOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-bg-200 border border-line-100 rounded-md shadow-lg overflow-hidden z-50">
-                  <button
-                    onClick={() => {
-                      alert('준비 중');
-                      setIsDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2 font-mono text-sm text-gray-100 hover:bg-bg-100 transition-colors"
-                  >
-                    // my page
-                  </button>
-                  <div className="border-t border-line-100" />
+                <div className="absolute right-0 top-full mt-2 w-32 overflow-hidden rounded-md border border-line-100 bg-bg-100 shadow-lg">
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 font-mono text-sm text-gray-100 hover:bg-bg-100 transition-colors"
+                    className="w-full px-4 py-2 text-left text-caption-lg-500 text-gr-200 hover:bg-bg-200 hover:text-gr-100"
                   >
-                    // logout
+                    로그아웃
                   </button>
                 </div>
               )}
             </div>
           ) : (
             <>
-              <Link href="/login">
-                <Button variant="ghost" size="sm" className="font-sans">
-                  로그인
-                </Button>
-              </Link>
-              <Link href="/signup">
-                <Button variant="primary" size="sm" className="font-sans">
-                  회원가입
-                </Button>
+              <button
+                onClick={openLoginModal}
+                className="text-body-500 text-gr-100 transition-colors hover:text-primary"
+              >
+                로그인
+              </button>
+              <Link
+                href="/signup"
+                className="rounded-lg bg-primary px-4 py-2 text-caption-lg-500 text-white transition-all hover:opacity-90"
+              >
+                회원가입
               </Link>
             </>
           )}
         </div>
       </div>
+      <LoginModal />
     </header>
   );
 };
