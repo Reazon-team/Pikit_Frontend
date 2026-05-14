@@ -60,9 +60,8 @@ const Header = () => {
       <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-6 py-4">
         {/* Left Area: Logo & Menu */}
         <div className="flex items-center gap-10">
-          <Link href="/" onClick={handleLogoClick} className="text-heading-lg font-bold">
-            <span className="text-primary">P</span>
-            <span className="text-gr-100">ikit</span>
+          <Link href="/" onClick={handleLogoClick} className="flex items-center">
+            <img src="/logo.png" alt="Pickit" className="h-5 w-auto" />
           </Link>
           
           <nav className="flex items-center gap-5">
