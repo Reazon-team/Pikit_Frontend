@@ -23,11 +23,11 @@ function HomeContent() {
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 16;
 
-  // 인기 프롬프트 (상위 6개, copyCount 기준)
+  // 인기 프롬프트 (상위 12개, copyCount 기준)
   useEffect(() => {
     const fetchPopular = async () => {
       try {
-        const response = await promptApi.popular({ limit: 6 });
+        const response = await promptApi.popular({ limit: 12 });
         setPopularPrompts(response);
       } catch (err) {
         console.error('Failed to fetch popular prompts:', err);
