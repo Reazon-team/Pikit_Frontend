@@ -1,34 +1,36 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
   /* Primary */
-  --color-primary: #FF6803;
-  --color-primary-light: #FFC89A;
+  --color-primary: #ff6803;
+  --color-primary-light: #ffc89a;
 
   /* Gray Scale */
   --color-gr-100: #111111;
-  --color-gr-200: #686666;
-  --color-gr-300: #A9A9A9;
-  --color-gr-400: #C9C9C9;
-  --color-gr-500: #E9E9E9;
+  --color-gr-200: #666666;
+  --color-gr-300: #ababab;
+  --color-gr-400: #c8c8c8;
+  --color-gr-500: #ebebeb;
 
   /* Background */
-  --color-bg-100: #FFFFFF;
-  --color-bg-200: #F9F9F9;
+  --color-bg-100: #ffffff;
+  --color-bg-200: #f9f9f9;
 
   /* Line */
-  --color-line-100: #E9E9E9;
+  --color-line-100: #ebebeb;
 
   /* Semantic */
-  --color-danger: #E53A36;
+  --color-danger: #e53a36;
 
   /* Border Radius */
   --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
 
   /* Font */
-  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, sans-serif;
 }
 
 /* 기본 body 스타일 */
@@ -40,12 +42,64 @@ body {
 }
 
 @layer utilities {
-  .text-heading-xl { font-size: 28px; line-height: 150%; font-weight: 600; letter-spacing: -0.011em; }
-  .text-heading-lg { font-size: 24px; line-height: 150%; font-weight: 600; letter-spacing: -0.011em; }
-  .text-heading-md { font-size: 20px; line-height: 150%; font-weight: 600; letter-spacing: -0.011em; }
-  .text-body-500 { font-size: 16px; line-height: 150%; font-weight: 500; letter-spacing: -0.011em; }
-  .text-body-400 { font-size: 16px; line-height: 150%; font-weight: 400; letter-spacing: -0.011em; }
-  .text-caption-lg-500 { font-size: 14px; line-height: 150%; font-weight: 500; letter-spacing: -0.011em; }
-  .text-caption-lg-400 { font-size: 14px; line-height: 150%; font-weight: 400; letter-spacing: -0.011em; }
-  .text-caption { font-size: 12px; line-height: 150%; font-weight: 400; letter-spacing: -0.011em; }
+  .text-heading-xl {
+    font-size: 28px;
+    line-height: 150%;
+    font-weight: 600;
+    letter-spacing: -0.011em;
+  }
+  .text-heading-lg {
+    font-size: 24px;
+    line-height: 150%;
+    font-weight: 600;
+    letter-spacing: -0.011em;
+  }
+  .text-heading-md {
+    font-size: 20px;
+    line-height: 150%;
+    font-weight: 600;
+    letter-spacing: -0.011em;
+  }
+  .text-heading-s {
+    font-size: 18px;
+    line-height: 150%;
+    font-weight: 600;
+    letter-spacing: -0.011em;
+  }
+  .text-body-600 {
+    font-size: 16px;
+    line-height: 150%;
+    font-weight: 600;
+    letter-spacing: -0.011em;
+  }
+  .text-body-500 {
+    font-size: 16px;
+    line-height: 150%;
+    font-weight: 500;
+    letter-spacing: -0.011em;
+  }
+  .text-body-400 {
+    font-size: 16px;
+    line-height: 150%;
+    font-weight: 400;
+    letter-spacing: -0.011em;
+  }
+  .text-caption-lg-500 {
+    font-size: 14px;
+    line-height: 150%;
+    font-weight: 500;
+    letter-spacing: -0.011em;
+  }
+  .text-caption-lg-400 {
+    font-size: 14px;
+    line-height: 150%;
+    font-weight: 400;
+    letter-spacing: -0.011em;
+  }
+  .text-caption {
+    font-size: 12px;
+    line-height: 150%;
+    font-weight: 400;
+    letter-spacing: -0.011em;
+  }
 }

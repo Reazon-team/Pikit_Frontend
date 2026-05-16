@@ -24,7 +24,10 @@ const Header = () => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -57,13 +60,17 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-line-100 bg-bg-100">
-      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-6 py-4">
+      <div className="mx-auto flex h-14 max-w-[1280px] items-center justify-between px-6 py-4">
         {/* Left Area: Logo & Menu */}
         <div className="flex items-center gap-10">
-          <Link href="/" onClick={handleLogoClick} className="flex items-center">
+          <Link
+            href="/"
+            onClick={handleLogoClick}
+            className="flex items-center"
+          >
             <img src="/logo.png" alt="Pickit" className="h-5 w-auto" />
           </Link>
-          
+
           <nav className="flex items-center gap-5">
             {menuItems.map((item) => {
               const isActive = pathname === item.href;
@@ -88,12 +95,12 @@ const Header = () => {
           <input
             type="text"
             placeholder="프롬프트를 검색하세요."
-            className="w-full rounded-lg bg-bg-200 py-2 pl-10 pr-4 text-body-400 text-gr-100 placeholder:text-gr-200 focus:outline-none focus:ring-2 focus:ring-primary-light"
+            className="h-10 w-full rounded-md bg-bg-200 pl-10 pr-4 text-caption-lg-400 text-gr-100 placeholder:text-gr-200 focus:outline-none focus:ring-2 focus:ring-primary-light"
           />
         </div>
 
         {/* Right Area: Auth */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           {!mounted ? (
             <div className="h-9 w-20" />
           ) : isAuthenticated && user ? (
@@ -105,7 +112,7 @@ const Header = () => {
               >
                 {user.nickname?.charAt(0).toUpperCase()}
               </button>
-              
+
               {isDropdownOpen && (
                 <div className="absolute right-0 top-full mt-2 w-32 overflow-hidden rounded-md border border-line-100 bg-bg-100 shadow-lg">
                   <button
@@ -121,13 +128,15 @@ const Header = () => {
             <>
               <button
                 onClick={openLoginModal}
-                className="text-body-500 text-gr-100 transition-colors hover:text-primary"
+                className="h-9 rounded-sm px-4 text-caption-lg-500 text-gr-200 transition-colors hover:text-gr-300"
+                style={{ border: '1px solid var(--color-line-100)' }}
               >
                 로그인
               </button>
               <Link
                 href="/signup"
-                className="rounded-lg bg-primary px-4 py-2 text-caption-lg-500 text-white transition-all hover:opacity-90"
+                className="flex items-center rounded-sm bg-primary px-4 text-caption-lg-500 text-white transition-all hover:opacity-90"
+                style={{ height: '36px' }}
               >
                 회원가입
               </Link>

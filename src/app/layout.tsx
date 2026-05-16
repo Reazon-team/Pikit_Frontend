@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import Toast from "@/components/common/Toast";
+import type { Metadata } from 'next';
+import './globals.css';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import Toast from '@/components/common/Toast';
 
 export const metadata: Metadata = {
-  title: "Pikit - AI Prompt Archive",
-  description: "Collect and search AI image prompts from Instagram",
+  title: 'Pikit - AI Prompt Archive',
+  description: 'Collect and search AI image prompts from Instagram',
 };
 
 export default function RootLayout({
