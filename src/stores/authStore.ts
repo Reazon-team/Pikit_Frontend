@@ -31,6 +31,7 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   
   setAuth: (data: AuthResponse, rememberMe?: boolean) => void;
   clearAuth: () => void;
@@ -44,6 +45,7 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
+      isAdmin: false,
 
       setAuth: (data: AuthResponse, rememberMe: boolean = false) => {
         // 로그인 시 rememberMe 플래그를 먼저 저장 (storage 어댑터가 이걸 보고 분기)
@@ -59,6 +61,7 @@ export const useAuthStore = create<AuthState>()(
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
           isAuthenticated: true,
+          isAdmin: data.isAdmin ?? false,
         });
       },
 
@@ -72,6 +75,7 @@ export const useAuthStore = create<AuthState>()(
           accessToken: null,
           refreshToken: null,
           isAuthenticated: false,
+          isAdmin: false,
         });
       },
 
