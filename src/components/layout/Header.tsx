@@ -10,7 +10,7 @@ import { authApi } from '@/lib/api';
 import LoginModal from '@/components/auth/LoginModal';
 
 const Header = () => {
-  const { isAuthenticated, user, clearAuth } = useAuthStore();
+  const { isAuthenticated, isAdmin, user, clearAuth } = useAuthStore();
   const { openLoginModal } = useUIStore();
   const [mounted, setMounted] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -86,6 +86,18 @@ const Header = () => {
                 </Link>
               );
             })}
+            
+            {/* 관리자만 보이는 메뉴 */}
+            {mounted && isAuthenticated && isAdmin && (
+              <Link
+                href="/admin/prompts"
+                className={`text-body-500 transition-colors hover:text-gr-100 ${
+                  pathname === '/admin/prompts' ? 'font-medium text-gr-100' : 'text-gr-200'
+                }`}
+              >
+                프롬프트 관리
+              </Link>
+            )}
           </nav>
         </div>
 

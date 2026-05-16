@@ -11,6 +11,7 @@ import {
   CopyResponse,
   PromptSort,
   PageResponse,
+  PromptAdminItem,
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
@@ -153,5 +154,32 @@ export const promptApi = {
     apiClient<CopyResponse>(`/api/prompts/${id}/copy`, {
       method: 'POST',
       skipAuth: true,
+    }),
+};
+
+export const adminApi = {
+  getPrompts: (page: number, size: number = 20) =>
+    apiClient<PageResponse<PromptAdminItem>>(`/api/admin/prompts?page=${page}&size=${size}`),
+  
+  createPrompt: (data: any) =>
+    apiClient<PromptAdminItem>('/api/admin/prompts', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  
+  updatePrompt: (id: number, data: any) =>
+    apiClient<PromptAdminItem>(`/api/admin/prompts/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  
+  deletePrompt: (id: number) =>
+    apiClient<void>(`/api/admin/prompts/${id}`, {
+      method: 'DELETE',
+    }),
+  
+  toggleVisibility: (id: number) =>
+    apiClient<PromptAdminItem>(`/api/admin/prompts/${id}/visibility`, {
+      method: 'PATCH',
     }),
 };

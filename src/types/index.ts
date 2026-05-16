@@ -65,6 +65,18 @@ export interface AuthResponse {
   userId: number;
   username: string;
   nickname: string;
+  isAdmin: boolean;
+}
+
+export interface PromptAdminItem {
+  id: number;
+  title: string;
+  beforeImageUrl: string;
+  afterImageUrl: string;
+  promptText: string;
+  visible: boolean;
+  copyCount: number;
+  createdAt: string;
 }
 
 export interface SignupRequest {
