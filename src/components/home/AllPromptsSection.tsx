@@ -19,15 +19,15 @@ const AllPromptsSection = ({
   return (
     <section className="mx-auto max-w-[1280px] px-6 py-8">
       <h2 className="mb-4 text-heading-md text-gr-100">전체 프롬프트</h2>
-      
+
       {isLoading ? (
-        <div className="grid grid-cols-4 gap-x-6 gap-y-8">
+        <div className="grid grid-cols-4 gap-x-5 gap-y-8">
           {[...Array(16)].map((_, i) => (
             <PromptCardSkeleton key={i} />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-4 gap-x-6 gap-y-8">
+        <div className="grid grid-cols-4 gap-x-5 gap-y-8">
           {prompts.map((prompt) => (
             <PromptCard
               key={prompt.id}

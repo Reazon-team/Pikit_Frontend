@@ -20,25 +20,21 @@ export const BeforeAfterSlider: React.FC<Props> = ({
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleMove = useCallback(
-    (clientX: number) => {
-      if (!containerRef.current) return;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const newPosition = (x / rect.width) * 100;
-      const clamped = Math.max(0, Math.min(100, newPosition));
-      setPosition(clamped);
-    },
-    []
-  );
+  const handleMove = useCallback((clientX: number) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const newPosition = (x / rect.width) * 100;
+    const clamped = Math.max(0, Math.min(100, newPosition));
+    setPosition(clamped);
+  }, []);
 
   const onPointerMove = useCallback(
     (e: PointerEvent) => {
       if (!isDragging) return;
       handleMove(e.clientX);
     },
-    [isDragging, handleMove]
+    [isDragging, handleMove],
   );
 
   const onPointerUp = useCallback(() => {
@@ -78,19 +74,19 @@ export const BeforeAfterSlider: React.FC<Props> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative aspect-square w-full overflow-hidden select-none touch-none bg-bg-100 ${className}`}
+      className={`relative w-full overflow-hidden select-none touch-none bg-bg-100 ${className}`}
       onPointerDown={handlePointerDown}
       style={{ cursor: isDragging ? 'ew-resize' : 'default' }}
     >
-      {/* After Image (Background) - Shows on the right side of the handle */}
+      {/* After Image (Background) */}
       <img
         src={afterImageUrl}
         alt="After"
-        className="absolute inset-0 h-full w-full object-cover"
+        className="block w-full h-auto"
         draggable={false}
       />
 
-      {/* Before Image (Clipped) - Shows on the left side of the handle */}
+      {/* Before Image (Clipped) */}
       <div
         className="absolute inset-0 h-full w-full overflow-hidden"
         style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
@@ -98,7 +94,7 @@ export const BeforeAfterSlider: React.FC<Props> = ({
         <img
           src={beforeImageUrl}
           alt="Before"
-          className="h-full w-full object-cover"
+          className="w-full h-full object-cover"
           draggable={false}
         />
       </div>
@@ -117,17 +113,13 @@ export const BeforeAfterSlider: React.FC<Props> = ({
         style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
       >
         {/* Handle Circle */}
-        <div
-          className="absolute left-1/2 top-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black shadow-lg active:scale-110 transition-transform pointer-events-auto cursor-ew-resize"
-        >
+        <div className="absolute left-1/2 top-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black shadow-lg active:scale-110 transition-transform pointer-events-auto cursor-ew-resize">
           <MoveHorizontal size={16} />
         </div>
       </div>
 
-      {/* Invisible overlay to capture all pointer events while dragging */}
-      {isDragging && (
-        <div className="absolute inset-0 z-50 cursor-ew-resize" />
-      )}
+      {/* Invisible overlay */}
+      {isDragging && <div className="absolute inset-0 z-50 cursor-ew-resize" />}
     </div>
   );
 };

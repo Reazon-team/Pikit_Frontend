@@ -15,6 +15,7 @@
   /* Background */
   --color-bg-100: #ffffff;
   --color-bg-200: #f9f9f9;
+  --color-bg-300: #f2f2f2;
 
   /* Line */
   --color-line-100: #ebebeb;
@@ -26,6 +27,7 @@
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 10px;
+  --radius-4: 12px;
   --radius-xl: 16px;
 
   /* Font */

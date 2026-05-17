@@ -19,7 +19,7 @@ export default function PromptDetailClient() {
   const [prompt, setPrompt] = useState<PromptDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  
+
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
   const { openLoginModal } = useUIStore();
@@ -49,7 +49,9 @@ export default function PromptDetailClient() {
       await navigator.clipboard.writeText(textToCopy);
       showToast('프롬프트가 복사되었습니다!');
       const result = await promptApi.incrementCopy(prompt.id);
-      setPrompt((prev) => prev ? { ...prev, copyCount: result.copyCount } : null);
+      setPrompt((prev) =>
+        prev ? { ...prev, copyCount: result.copyCount } : null,
+      );
     } catch (err) {
       showToast('복사에 실패했습니다.', 'error');
     }
@@ -64,20 +66,21 @@ export default function PromptDetailClient() {
     try {
       const result = await promptApi.toggleBookmark(prompt.id);
       setIsBookmarked(result.bookmarked ?? false);
-      setPrompt((prev) => prev ? { ...prev, bookmarkCount: result.count } : null);
-      showToast(result.bookmarked ? '북마크에 추가되었습니다.' : '북마크가 해제되었습니다.');
+      setPrompt((prev) =>
+        prev ? { ...prev, bookmarkCount: result.count } : null,
+      );
+      showToast(
+        result.bookmarked
+          ? '북마크에 추가되었습니다.'
+          : '북마크가 해제되었습니다.',
+      );
     } catch (err) {
       showToast('북마크 처리에 실패했습니다.', 'error');
     }
   };
 
-  if (id === 'placeholder') {
-    return null;
-  }
-
-  if (isLoading) {
-    return <PromptDetailSkeleton />;
-  }
+  if (id === 'placeholder') return null;
+  if (isLoading) return <PromptDetailSkeleton />;
 
   if (!prompt) {
     return (
@@ -96,60 +99,76 @@ export default function PromptDetailClient() {
     <div className="mx-auto max-w-[1280px] px-6 py-8">
       {/* Top Info Area */}
       <div className="mb-6">
-        <h1 className="text-heading-xl text-gr-100 mb-2">{prompt.title}</h1>
-        <div className="flex items-center gap-3 text-caption text-gr-300">
-          <span className="flex items-center gap-1">
-            <Copy size={14} /> {prompt.copyCount}
+        <h1 className="text-heading-lg text-gr-100 mb-2">{prompt.title}</h1>
+        <div className="flex items-center gap-3 text-caption-lg-400 text-gr-300">
+          <span className="flex items-center" style={{ gap: '4px' }}>
+            <Copy size={16} /> {prompt.copyCount}
           </span>
-          <span className="flex items-center gap-1">
-            <Bookmark size={14} fill={isBookmarked ? 'currentColor' : 'none'} className={isBookmarked ? "text-primary" : ""} /> {prompt.bookmarkCount}
+          <span className="flex items-center" style={{ gap: '4px' }}>
+            <Bookmark
+              size={16}
+              fill={isBookmarked ? 'currentColor' : 'none'}
+              className={isBookmarked ? 'text-primary' : ''}
+            />{' '}
+            {prompt.bookmarkCount}
           </span>
         </div>
       </div>
 
       {/* Main Content: 2-Column Grid */}
-      <div className="grid grid-cols-2 gap-8">
-        {/* Left: Prompt Text Area */}
-        <div className="bg-bg-200 rounded-2xl p-6 border border-line-100">
+      <div className="grid grid-cols-2 gap-8 items-start">
+        {/* Left: Before/After Slider Area */}
+        <div>
+          <div className="overflow-hidden rounded-2xl border border-line-100 shadow-sm bg-bg-200">
+            <BeforeAfterSlider
+              beforeImageUrl={prompt.beforeImageUrl}
+              afterImageUrl={prompt.afterImageUrl}
+              className="w-full"
+            />
+          </div>
+          <p className="text-caption-lg-400 text-gr-300 text-center mt-3">
+            드래그해서 변환 결과 비교
+          </p>
+        </div>
+
+        {/* Right: Prompt Text Area - 외부 박스 */}
+        <div
+          className="flex flex-col gap-3 border border-line-100 p-4"
+          style={{ borderRadius: 'var(--radius-xl)' }}
+        >
           {/* Action Area */}
-          <div className="flex items-center gap-3 mb-6">
+          <div className="flex items-center gap-3">
             <button
               onClick={handleCopy}
-              className="flex-1 bg-primary text-white py-3 rounded-lg text-body-500 flex items-center justify-center gap-2 hover:opacity-90 transition shadow-sm"
+              className="flex-1 bg-primary text-white py-3 rounded-md text-body-500 flex items-center justify-center gap-2 hover:opacity-90 transition shadow-sm"
             >
               <Copy size={18} />
               프롬프트 복사
             </button>
             <button
               onClick={handleBookmark}
-              className="p-3 bg-bg-100 border border-line-100 rounded-lg hover:border-gr-300 transition"
+              className="p-3 bg-bg-100 border border-line-100 rounded-md hover:bg-bg-200 transition"
               aria-label="북마크"
             >
-              <Bookmark size={18} className={isBookmarked ? "fill-primary text-primary" : "text-gr-200"} />
+              <Bookmark
+                size={18}
+                className={
+                  isBookmarked ? 'fill-primary text-primary' : 'text-gr-200'
+                }
+              />
             </button>
           </div>
 
-          {/* Prompt Label */}
-          <p className="text-caption-lg-500 text-gr-100 mb-3">프롬프트</p>
-
           {/* Prompt Text */}
-          <div className="text-body-400 text-gr-100 whitespace-pre-wrap leading-relaxed">
-            {prompt.promptText || prompt.description}
+          <div
+            className="bg-bg-200 rounded-md border border-line-100"
+            style={{ padding: '16px 20px' }}
+          >
+            <p className="text-heading-s text-gr-100 mb-2">프롬프트</p>
+            <div className="text-body-400 text-gr-200 whitespace-pre-wrap leading-relaxed">
+              {prompt.promptText || prompt.description}
+            </div>
           </div>
-        </div>
-
-        {/* Right: Before/After Slider Area */}
-        <div>
-          <div className="overflow-hidden rounded-2xl border border-line-100 shadow-sm bg-bg-200">
-            <BeforeAfterSlider
-              beforeImageUrl={prompt.beforeImageUrl}
-              afterImageUrl={prompt.afterImageUrl}
-              className="aspect-square"
-            />
-          </div>
-          <p className="text-caption-lg-400 text-gr-300 text-center mt-3">
-            드래그해서 변환 결과 비교
-          </p>
         </div>
       </div>
     </div>
