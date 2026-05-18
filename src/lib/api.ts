@@ -182,4 +182,21 @@ export const adminApi = {
     apiClient<PromptAdminItem>(`/api/admin/prompts/${id}/visibility`, {
       method: 'PATCH',
     }),
+  
+  uploadImage: async (formData: FormData): Promise<{ url: string }> => {
+    const { accessToken } = useAuthStore.getState();
+    const res = await fetch(`${API_BASE_URL}/api/admin/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+
+    const result: ApiResponse<{ url: string }> = await res.json();
+    if (!result.success || !result.data) {
+      throw new Error(result.message || '업로드 실패');
+    }
+    return result.data;
+  },
 };
